@@ -1,6 +1,16 @@
-*.csv
-*.zip
-*.pkl
+# Python
 __pycache__/
-*.pyc
+*.py[cod]
+*.pkl
+*.ipynb_checkpoints
+
+# Virtual environment
 venv/
+
+# Data files
+*.csv
+*.tsv
+*.zip
+git add .
+# IDE
+.idea/
