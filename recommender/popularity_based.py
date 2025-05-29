@@ -8,29 +8,25 @@ class PopularityRecommender:
         self.popular_movies = self._compute_popularity()
 
     def _compute_popularity(self, min_ratings=50):
-        # Группируем рейтинги по movieId
+        """Вычисление популярных фильмов по среднему рейтингу и количеству оценок."""
         movie_stats = self.ratings.groupby('movieId').agg(
             count=('rating', 'count'),
             avg_rating=('rating', 'mean')
         ).reset_index()
 
-        # Оставляем только популярные (фильтруем по количеству оценок)
         popular = movie_stats[movie_stats['count'] >= min_ratings]
-
-        # Сортируем по средней оценке (можно заменить на count — по просмотрам)
         popular_sorted = popular.sort_values(by='avg_rating', ascending=False)
 
-        # Присоединяем названия фильмов
-        popular_movies = pd.merge(popular_sorted, self.movies, on='movieId')
-
-        return popular_movies[['movieId', 'title', 'avg_rating', 'count']]
+        return pd.merge(popular_sorted, self.movies, on='movieId')[
+            ['movieId', 'title', 'avg_rating', 'count']
+        ]
 
     def recommend(self, top_n=10):
+        """Рекомендация самых популярных фильмов."""
         return self.popular_movies.head(top_n)
 
-    # метод update_popular_movies для части II б
-
     def update_popular_movies(self):
+        """Обновление популярных фильмов (например, в продакшене)."""
         self.popular_movies = (
             self.ratings.groupby('movieId')
             .agg(avg_rating=('rating', 'mean'), count=('rating', 'count'))
@@ -39,4 +35,3 @@ class PopularityRecommender:
             .head(10)[['title']]
             .reset_index(drop=True)
         )
-
